@@ -1,71 +1,68 @@
 
 # random forest, linear regression, decisive tree, long short-term memory
-
-
-from binance import Client, ThreadedWebsocketManager, ThreadedDepthCacheManager
+from binance import Client
 from Secret import api_key, secret_key
 from Indicators import Indicators
 import pandas as pd
 import datetime as dt
-import matplotlib.pyplot as plt
-import mplfinance as mpf
-from tradingview_ta import TA_Handler, Interval, Exchange
-from tvDatafeed import TvDatafeed, Interval
-import numpy as np
-# TradingView
-# tv = TvDatafeed()
-# nifty_index_data = tv.get_hist(symbol='BTCUSDT', exchange='Binance', interval=Interval.in_5_minute, n_bars=1000)
-# handler = TA_Handler(
-#     symbol="BTCUSDT",
-#     exchange="Binance",
-#     screener="Crypto",
-#     interval="5m",
-#     timeout=None
-# )
-# a = handler.get_analysis().indicators
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 # Binance
 client = Client(api_key, secret_key)
 symbol = "BTCUSDT"
 interval = '5m'
-klines = client.get_historical_klines(symbol, interval, "20 Oct,2022")
+klines = client.get_historical_klines(symbol, interval, "23 Oct,2022")
 for line in klines:
     del line[5:]
 data = pd.DataFrame(klines)
 data.columns = ['open_time', 'open', 'high', 'low', 'close']
 data.open_time = [dt.datetime.fromtimestamp(x/1000.0) for x in data.open_time]
-resolution = int(float(data['high'].min())), int(float(data['high'].max()))
-difference = abs(resolution[0]-resolution[1])
 indicators = Indicators(data, [20, 50, 100])
-fig, ax = plt.subplots()
-data.index = pd.DatetimeIndex(data['open_time'])
-data = data.drop('open_time', axis = 1)
-#ax1.plot(data.open_time, indicators.sma_result)
-data = data.apply(pd.to_numeric, errors='coerce')
-up = data[data['close'] >= data['open']]
 
-down = data[data['close'] < data['open']]
-col1 = 'green'
+fig = make_subplots(
+    rows=2, cols=1,
+    shared_xaxes=True,
+    vertical_spacing=0.03,
+    row_heights=[0.85, 0.15]
+)
 
-col2 = 'red'
+fig.add_scatter(
+    x=data['open_time'][100:],
+    y=indicators.rsi_result[100:],
+    name='rsi',  row=2, col=1)
+fig.add_scatter(
+    x=data['open_time'][100:],
+    y=indicators.bb_result[0][100:],
+    name='bollinger_band up',  row=1, col=1)
+fig.add_scatter(
+    x=data['open_time'][100:],
+    y=indicators.bb_result[1][100:],
+    name='bollinger_band down', row=1, col=1)
+fig.add_scatter(
+    x=data['open_time'][100:],
+    y=indicators.sma_result[20][100:],
+    name='SMA 20',row=1, col=1)
+fig.add_scatter(
+    x=data['open_time'][100:],
+    y=indicators.sma_result[50][100:],
+    name='SMA 50',row=1, col=1)
+fig.add_scatter(
+    x=data['open_time'][100:],
+    y=indicators.sma_result[100][100:],
+    name='SMA 100',row=1, col=1)
 
-width = .0027
-width2 = .00019
-ax.set_facecolor('black')
-ax.bar(up.index, up.close - up.open, width, bottom=up.open, color=col1)
-ax.bar(up.index, up.high - up.close, width2, bottom=up.close, color=col1)
-ax.bar(up.index, up.low - up.open, width2, bottom=up.open, color=col1)
+fig.add_candlestick(x=data['open_time'][100:],
+                                   open=data['open'][100:],
+                                   high=data['high'][100:],
+                                   low=data['low'][100:],
+                                   close=data['close'][100:],
+name='Market price',
+    row=1, col=1
+)
+fig.update_layout(xaxis_rangeslider_visible=False, template="plotly_dark")
+fig.show()
 
-ax.bar(down.index, down.close - down.open, width, bottom=down.open, color=col2)
-ax.bar(down.index, down.high - down.open, width2, bottom=down.open, color=col2)
-ax.bar(down.index, down.low - down.close, width2, bottom=down.close, color=col2)
-plt.plot(data.index, indicators.sma_result)
-ax.grid(color='gray')
-ax.set_xlabel('time')
-ax.set_ylabel('price')
-ax.set_title("Bitcoin chart")
-plt.show()
-...
 
 def main():
     pass
@@ -73,5 +70,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-...
