@@ -21,8 +21,8 @@ class Indicators:
 
     def bollinger_bands(self):
         standard_dev = self.data['close'].rolling(20).std()
-        bb_up = self.sma_result[20] + standard_dev * 2  # Calculate top band
-        bb_down = self.sma_result[20] - standard_dev * 2  # Calculate bottom band
+        bb_up = self.sma_result[20] + standard_dev * 2
+        bb_down = self.sma_result[20] - standard_dev * 2
         return bb_up, bb_down
 
     def relative_strength_index(self, periods=14):
@@ -57,11 +57,10 @@ class Indicators:
         period52_high = self.data['high'].rolling(window=52).max()
         period52_low = self.data['low'].rolling(window=52).min()
         elements['Senkou Span B'] = ((period52_high + period52_low) / 2)
-        for i in range(0,26):
+        for i in range(0, 26):
             elements.loc[len(elements)] = ['nan', 'nan', 'nan', 'nan', 'nan']
         elements['Senkou Span B'] = elements['Senkou Span B'].shift(26)
         elements['Senkou Span A'] = elements['Senkou Span A'].shift(26)
 
         elements['chikou_span'] = self.data['close'].shift(-22)
         return elements
-
