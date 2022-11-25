@@ -16,7 +16,7 @@ class Indicators:
         a = list()
         for i in sma_periods:
             a.append(self.data['open'].rolling(window=i).mean())
-        result = pd.DataFrame(a).transpose()
+        result = pd.DataFrame(a).transpose().shift(-1)
         result.columns = sma_periods
         return result
 
@@ -70,29 +70,51 @@ class Indicators:
 class IndicatorsAnalysis(Indicators):
     def __init__(self, data, sma_periods):
         super().__init__(data, sma_periods)
+        self.data = data
         self.sma_result['open_time'] = self.data['open_time']
         self.sma_result['sma_20_prev'] = self.sma_result[20].shift(1)
         self.sma_result['sma_50_prev'] = self.sma_result[50].shift(1)
         self.sma_result['sma_100_prev'] = self.sma_result[100].shift(1)
-        # self.sma_analysis_results = self.sma_analysis()
+        self.sma_result['close_prev'] = self.data['close'].shift(1)
         self.sma_result = self.sma_result.fillna(0)
-        self.sma_result['crossovers'] = np.vectorize(self.sma_analysis)(self.sma_result[20],
-                                                                        self.sma_result['sma_20_prev'],
-                                                                        self.sma_result[50],
-                                                                        self.sma_result['sma_50_prev'],
-                                                                        self.sma_result[100],
-                                                                        self.sma_result['sma_100_prev'])
-        self.signal = self.sma_result[self.sma_result['crossovers'] == '+'].copy()
+        self.sma_result['crossovers'] = np.vectorize(self.sma_cross_analysis)(self.sma_result[20],
+                                                                              self.sma_result['sma_20_prev'],
+                                                                              self.sma_result[50],
+                                                                              self.sma_result['sma_50_prev'],
+                                                                              self.sma_result[100],
+                                                                              self.sma_result['sma_100_prev'])
 
-    def sma_analysis(self, sma_20, sma_20_prev, sma_50, sma_50_prev, sma_100, sma_100_prev, status="?"):
+        self.sma_result['50_to_100'] = np.vectorize(self.sma_50_to_100)(self.sma_result[100],
+                                                                        self.sma_result[50],
+                                                                        self.data['close'],
+                                                                        self.sma_result['sma_50_prev'],
+                                                                        self.sma_result['close_prev'])
+        self.signal_up = self.sma_result[self.sma_result['crossovers'] == '+'].copy()
+        self.signal_down = self.sma_result[self.sma_result['crossovers'] == '-'].copy()
+        self.signal_50_to_100 = self.sma_result[self.sma_result['50_to_100'] == '+'].copy()
+
+    def sma_cross_analysis(self, sma_20, sma_20_prev, sma_50, sma_50_prev, sma_100, sma_100_prev):
         if sma_20 > sma_50 > sma_20_prev and sma_20_prev < sma_50_prev \
                 or sma_20 > sma_100 > sma_20_prev and sma_20_prev < sma_100_prev \
                 or sma_50 > sma_100 > sma_50_prev and sma_50_prev < sma_100_prev:
             status = "+"
             return status
-        if sma_20 < sma_50 < sma_20_prev and status != "-" \
-                or sma_20 < sma_100 < sma_20_prev and status != "-" \
-                or sma_50 < sma_100 < sma_50_prev and status != "-":
+        if sma_20 < sma_50 < sma_20_prev and sma_20_prev > sma_50_prev \
+                or sma_20 < sma_100 < sma_20_prev and sma_20_prev > sma_100_prev \
+                or sma_50 < sma_100 < sma_50_prev and sma_50_prev > sma_100_prev:
             status = "-"
             return status
         return None
+
+    # def sma_50_to_100(self, sma_100, sma_50, close, ):
+    #     if self.sma_result[100][i] > self.sma_result[50][i] \
+    #             and abs(self.sma_result[100][i] - self.sma_result[50][i]) > (0.01 * self.data['close'][i]) \
+    #             and self.sma_result[50][i] < self.data['close'][i]:
+    #         return "+"
+    #     return None
+
+    def sma_50_to_100(self, sma_100, sma_50, close, sma_50_prev, close_prev):
+        if sma_100 > sma_50 and abs(sma_100 - sma_50) > (0.01 * close) and sma_50 < close and sma_50_prev > close_prev:
+            return "+"
+        return None
+

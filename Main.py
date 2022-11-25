@@ -42,8 +42,8 @@ app = dash.Dash(__name__)
 # Binance
 client = Client(_api_key, _secret_key)
 symbol = "BTCUSDT"
-interval = '5m'
-klines = client.get_historical_klines(symbol, interval, "22 Nov,2022")
+interval = '1h'
+klines = client.get_historical_klines(symbol, interval, "1 Nov,2022")
 for line in klines:
     del line[5:]
 data = pd.DataFrame(klines)
@@ -73,9 +73,11 @@ f = pd.Series(e)
 #
 # for i, row in indicators_analysis.signal.iterrows():
 #     fig.add_scatter(x=data['open_time'][i], y = indicators.sma_result[20][i], name= 'dupa', marker=dict(color="gold", size=12), row=1, col=1)
-fig.add_scatter( x=indicators_analysis.signal['open_time'], y = indicators_analysis.signal[20], mode ='markers', name= 'dupa', marker=dict(color="gold", size = 12, ), row=1, col=1)
-
-
+# fig.add_scatter( x=indicators_analysis.signal_up['open_time'], y = indicators_analysis.signal_up[20], mode ='markers',
+#                  name= 'dupa', marker=dict(color="gold", size = 12, ), row=1, col=1)
+# fig.add_scatter( x=indicators_analysis.signal_down['open_time'], y = indicators_analysis.signal_down[50], mode ='markers',
+#                  name= 'dupa', marker=dict(color="red", size = 12, ), row=1, col=1)
+#
 # draw_fig(fig, data['open_time'][100:], indicators.ichimoku_cloud_result['Tenkan-sen'][100:], 'Tenkan-sen')
 # draw_fig(fig, data['open_time'][100:], indicators.ichimoku_cloud_result['Kijun-sen'][100:], 'Kijun-sen')
 # draw_fig(fig, f, indicators.ichimoku_cloud_result['Senkou Span A'][100:], 'Senkou Span A')
@@ -85,14 +87,44 @@ fig.add_scatter( x=indicators_analysis.signal['open_time'], y = indicators_analy
 # draw_fig(fig, data['open_time'][100:], indicators.rsi_result[100:], 'RSI', frow=2)
 # draw_fig(fig, data['open_time'][100:], indicators.bb_result[0][100:], 'bollinger_band up')
 # draw_fig(fig, data['open_time'][100:], indicators.bb_result[1][100:], 'bollinger_band down')
-draw_fig(fig, data['open_time'][100:], indicators.sma_result[20][100:], 'SMA 20')
-draw_fig(fig, data['open_time'][100:], indicators.sma_result[50][100:], 'SMA 50')
-draw_fig(fig, data['open_time'][100:], indicators.sma_result[100][100:], 'SMA 100')
-fig.add_candlestick(x=data['open_time'][100:],
-                    open=data['open'][100:],
-                    high=data['high'][100:],
-                    low=data['low'][100:],
-                    close=data['close'][100:],
+# draw_fig(fig, data['open_time'][100:], indicators.sma_result[20][100:], 'SMA 20')
+# draw_fig(fig, data['open_time'][100:], indicators.sma_result[50][100:], 'SMA 50')
+# draw_fig(fig, data['open_time'][100:], indicators.sma_result[100][100:], 'SMA 100')
+# fig.add_candlestick(x=data['open_time'][100:],
+#                     open=data['open'][100:],
+#                     high=data['high'][100:],
+#                     low=data['low'][100:],
+#                     close=data['close'][100:],
+#                     name='Market price',
+#                     row=1, col=1
+#                     )
+
+
+
+fig.add_scatter( x=indicators_analysis.signal_up['open_time'], y = indicators_analysis.signal_up[20], mode ='markers',
+                 name= 'dupa', marker=dict(color="gold", size = 12, ), row=1, col=1)
+fig.add_scatter( x=indicators_analysis.signal_down['open_time'], y = indicators_analysis.signal_down[50], mode ='markers',
+                 name= 'dupa', marker=dict(color="red", size = 12, ), row=1, col=1)
+fig.add_scatter( x=indicators_analysis.signal_50_to_100['open_time'], y = indicators_analysis.signal_down[100], mode ='markers',
+                 name= 'dupa', marker=dict(color="blue", size = 12, ), row=1, col=1)
+
+draw_fig(fig, data['open_time'], indicators.ichimoku_cloud_result['Tenkan-sen'], 'Tenkan-sen')
+draw_fig(fig, data['open_time'], indicators.ichimoku_cloud_result['Kijun-sen'], 'Kijun-sen')
+draw_fig(fig, f, indicators.ichimoku_cloud_result['Senkou Span A'], 'Senkou Span A')
+draw_fig(fig, f, indicators.ichimoku_cloud_result['Senkou Span B'], 'Senkou Span B')
+draw_fig(fig, data['open_time'], indicators.ichimoku_cloud_result['chikou_span'], 'chikou_span')
+draw_fig(fig, data['open_time'], indicators.cci_result, 'CCI', frow=3)
+draw_fig(fig, data['open_time'], indicators.rsi_result, 'RSI', frow=2)
+draw_fig(fig, data['open_time'], indicators.bb_result[0], 'bollinger_band up')
+draw_fig(fig, data['open_time'], indicators.bb_result[1], 'bollinger_band down')
+draw_fig(fig, data['open_time'], indicators.sma_result[20], 'SMA 20')
+draw_fig(fig, data['open_time'], indicators.sma_result[50], 'SMA 50')
+draw_fig(fig, data['open_time'], indicators.sma_result[100], 'SMA 100')
+fig.add_candlestick(x=data['open_time'],
+                    open=data['open'],
+                    high=data['high'],
+                    low=data['low'],
+                    close=data['close'],
                     name='Market price',
                     row=1, col=1
                     )
