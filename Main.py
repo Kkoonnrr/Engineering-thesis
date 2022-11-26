@@ -43,7 +43,7 @@ app = dash.Dash(__name__)
 client = Client(_api_key, _secret_key)
 symbol = "BTCUSDT"
 interval = '1h'
-klines = client.get_historical_klines(symbol, interval, "1 Nov,2022")
+klines = client.get_historical_klines(symbol, interval, "1 Sep,2022")
 for line in klines:
     del line[5:]
 data = pd.DataFrame(klines)
@@ -100,13 +100,24 @@ f = pd.Series(e)
 #                     )
 
 
-
+# SMA CROSS
 fig.add_scatter( x=indicators_analysis.signal_up['open_time'], y = indicators_analysis.signal_up[20], mode ='markers',
-                 name= 'dupa', marker=dict(color="gold", size = 12, ), row=1, col=1)
+                 name= 'signal_up', marker=dict(color="green", size = 12, ), row=1, col=1)
 fig.add_scatter( x=indicators_analysis.signal_down['open_time'], y = indicators_analysis.signal_down[50], mode ='markers',
-                 name= 'dupa', marker=dict(color="red", size = 12, ), row=1, col=1)
-fig.add_scatter( x=indicators_analysis.signal_50_to_100['open_time'], y = indicators_analysis.signal_down[100], mode ='markers',
-                 name= 'dupa', marker=dict(color="blue", size = 12, ), row=1, col=1)
+                 name= 'signal_down', marker=dict(color="red", size = 12, ), row=1, col=1)
+# SMA 50 TO 100
+fig.add_scatter( x=indicators_analysis.signal_50_to_100_down['open_time'], y = indicators_analysis.signal_50_to_100_down[100], mode ='markers',
+                 name= 'signal_50_to_100_down', marker=dict(color="red", size = 12, ), row=1, col=1)
+fig.add_scatter( x=indicators_analysis.signal_50_to_100_up['open_time'], y = indicators_analysis.signal_50_to_100_up[100], mode ='markers',
+                 name= 'signal_50_to_100_up', marker=dict(color="green", size = 12, ), row=1, col=1)
+# BB SQUEEZE
+fig.add_scatter( x=indicators_analysis.signal_bb_squeeze_up['open_time'], y = indicators_analysis.signal_bb_squeeze_up[20], mode ='markers',
+                 name= 'signal_bb_squeeze_up', marker=dict(color="green", size = 12, ), row=1, col=1)
+fig.add_scatter( x=indicators_analysis.signal_bb_squeeze_down['open_time'], y = indicators_analysis.signal_bb_squeeze_down[20], mode ='markers',
+                 name= 'signal_bb_squeeze_down', marker=dict(color="red", size = 12, ), row=1, col=1)
+
+fig.add_scatter( x=indicators_analysis.cci_100_bb_cross_up['open_time'], y = indicators_analysis.cci_100_bb_cross_up[20], mode ='markers',
+                 name= 'cci_100_bb_cross', marker=dict(color="green", size = 12, ), row=1, col=1)
 
 draw_fig(fig, data['open_time'], indicators.ichimoku_cloud_result['Tenkan-sen'], 'Tenkan-sen')
 draw_fig(fig, data['open_time'], indicators.ichimoku_cloud_result['Kijun-sen'], 'Kijun-sen')
