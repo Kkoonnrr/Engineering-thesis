@@ -3,6 +3,7 @@ from binance import Client
 from Secret import _api_key, _secret_key
 from Indicators import Indicators
 from Indicators import IndicatorsAnalysis
+from Learning_model import LearningModel
 import pandas as pd
 import datetime as dt
 from plotly.subplots import make_subplots
@@ -52,6 +53,12 @@ data.open_time = [dt.datetime.fromtimestamp(x / 1000.0) for x in data.open_time]
 data = data.astype({"open": float, "high": float, "low": float, "close": float})
 indicators = Indicators(data, [20, 50, 100])
 indicators_analysis = IndicatorsAnalysis(data, [20, 50, 100])
+learning_model = LearningModel(indicators_analysis)
+
+strategies = ["crossovers", "50_to_100", "sma_cross_rsi", "bb_squezze", "cci_100_bb_cross", "rsi_chart", "rsi_bb_boundary"]
+for strategy in strategies:
+    learning_model.testing(strategy)
+...
 
 fig = make_subplots(
     rows=3, cols=1,
@@ -62,7 +69,7 @@ fig = make_subplots(
 add_time = list()
 add_time.append(data.tail(1)['open_time'].item())
 for i in range(0, 26):
-    add_time.append(add_time[i] + dt.timedelta(minutes=5))
+    add_time.append(add_time[i] + dt.timedelta(hours=1))
 add_series = pd.Series(add_time)
 b = add_series.values.astype('datetime64[m]')
 a = data['open_time'][100:].values.astype('datetime64[m]')
@@ -110,14 +117,36 @@ fig.add_scatter( x=indicators_analysis.signal_50_to_100_down['open_time'], y = i
                  name= 'signal_50_to_100_down', marker=dict(color="red", size = 12, ), row=1, col=1)
 fig.add_scatter( x=indicators_analysis.signal_50_to_100_up['open_time'], y = indicators_analysis.signal_50_to_100_up[100], mode ='markers',
                  name= 'signal_50_to_100_up', marker=dict(color="green", size = 12, ), row=1, col=1)
+# # RSI AND SMA
+# fig.add_scatter( x=indicators_analysis.sma_cross_rsi_up['open_time'], y = indicators_analysis.sma_cross_rsi_up[20], mode ='markers',
+#                  name= 'sma_cross_rsi', marker=dict(color="green", size = 12, ), row=1, col=1)
+# fig.add_scatter( x=indicators_analysis.sma_cross_rsi_down['open_time'], y = indicators_analysis.sma_cross_rsi_down[20], mode ='markers',
+#                  name= 'sma_cross_rsi', marker=dict(color="red", size = 12, ), row=1, col=1)
 # BB SQUEEZE
 fig.add_scatter( x=indicators_analysis.signal_bb_squeeze_up['open_time'], y = indicators_analysis.signal_bb_squeeze_up[20], mode ='markers',
                  name= 'signal_bb_squeeze_up', marker=dict(color="green", size = 12, ), row=1, col=1)
 fig.add_scatter( x=indicators_analysis.signal_bb_squeeze_down['open_time'], y = indicators_analysis.signal_bb_squeeze_down[20], mode ='markers',
                  name= 'signal_bb_squeeze_down', marker=dict(color="red", size = 12, ), row=1, col=1)
-
+# CCI 100 & BB CROSS
 fig.add_scatter( x=indicators_analysis.cci_100_bb_cross_up['open_time'], y = indicators_analysis.cci_100_bb_cross_up[20], mode ='markers',
                  name= 'cci_100_bb_cross', marker=dict(color="green", size = 12, ), row=1, col=1)
+fig.add_scatter( x=indicators_analysis.cci_100_bb_cross_down['open_time'], y = indicators_analysis.cci_100_bb_cross_down[20], mode ='markers',
+                 name= 'cci_100_bb_cross', marker=dict(color="red", size = 12, ), row=1, col=1)
+# RSI
+fig.add_scatter( x=indicators_analysis.rsi_chart_up['open_time'], y = indicators_analysis.rsi_chart_up[20], mode ='markers',
+                 name= 'rsi_chart', marker=dict(color="green", size = 12, ), row=1, col=1)
+fig.add_scatter( x=indicators_analysis.rsi_chart_down['open_time'], y = indicators_analysis.rsi_chart_down[20], mode ='markers',
+                 name= 'rsi_chart', marker=dict(color="red", size = 12, ), row=1, col=1)
+# RSI AND BB
+fig.add_scatter( x=indicators_analysis.rsi_bb_boundary_up['open_time'], y = indicators_analysis.rsi_bb_boundary_up[20], mode ='markers',
+                 name= 'rsi_bb_boundary', marker=dict(color="green", size = 12, ), row=1, col=1)
+fig.add_scatter( x=indicators_analysis.rsi_bb_boundary_down['open_time'], y = indicators_analysis.rsi_bb_boundary_down[20], mode ='markers',
+                 name= 'rsi_bb_boundary', marker=dict(color="red", size = 12, ), row=1, col=1)
+
+
+
+
+
 
 draw_fig(fig, data['open_time'], indicators.ichimoku_cloud_result['Tenkan-sen'], 'Tenkan-sen')
 draw_fig(fig, data['open_time'], indicators.ichimoku_cloud_result['Kijun-sen'], 'Kijun-sen')
