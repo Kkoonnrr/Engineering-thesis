@@ -97,13 +97,13 @@ class IndicatorsAnalysis(Indicators):
                                                                         self.sma_result['sma_100_prev'])
 
         self.sma_result['sma_cross_rsi'] = np.vectorize(self.sma_cross_rsi)(self.sma_result[20],
-                                                                              self.sma_result['sma_20_prev'],
-                                                                              self.sma_result[50],
-                                                                              self.sma_result['sma_50_prev'],
-                                                                              self.sma_result[100],
-                                                                              self.sma_result['sma_100_prev'],
-                                                                              self.rsi_result,
-                                                                                 self.sma_result['rsi_prev'])
+                                                                            self.sma_result['sma_20_prev'],
+                                                                            self.sma_result[50],
+                                                                            self.sma_result['sma_50_prev'],
+                                                                            self.sma_result[100],
+                                                                            self.sma_result['sma_100_prev'],
+                                                                            self.rsi_result,
+                                                                            self.sma_result['rsi_prev'])
 
         self.sma_result['bb_squezze'] = np.vectorize(self.bb_squeeze)(self.bb_result[0],
                                                                       self.bb_result[0].shift(1),
@@ -119,15 +119,15 @@ class IndicatorsAnalysis(Indicators):
                                                                                   self.cci_result)
 
         self.sma_result['rsi_chart'] = np.vectorize(self.rsi_chart)(self.rsi_result,
-                                                                           self.rsi_result.shift(1))
+                                                                    self.rsi_result.shift(1))
 
         self.sma_result['rsi_bb_boundary'] = np.vectorize(self.rsi_bb_boundary)(self.rsi_result,
-                                                                                  self.rsi_result.shift(1),
-                                                                                  self.bb_result[0],
-                                                                                  self.bb_result[1],
-                                                                                  self.data['open'],
-                                                                                  self.data['close']
-                                                                                  )
+                                                                                self.rsi_result.shift(1),
+                                                                                self.bb_result[0],
+                                                                                self.bb_result[1],
+                                                                                self.data['open'],
+                                                                                self.data['close']
+                                                                                )
 
         self.signal_up = self.sma_result[self.sma_result['crossovers'] == "Buy"].copy()
         self.signal_down = self.sma_result[self.sma_result['crossovers'] == "Sell"].copy()
@@ -184,37 +184,36 @@ class IndicatorsAnalysis(Indicators):
 
     def bb_squeeze(self, bb_result_up, bb_result_up_prev, bb_result_down, bb_result_down_prev, sma_20, close):
         if abs(bb_result_up_prev - bb_result_down_prev) < (0.020 * sma_20) \
-                and (0.022 * sma_20) < abs(bb_result_up - bb_result_down)\
+                and (0.022 * sma_20) < abs(bb_result_up - bb_result_down) \
                 and close > bb_result_up:
             return "Buy"
         elif abs(bb_result_up_prev - bb_result_down_prev) < (0.020 * sma_20) \
-                and (0.022 * sma_20) < abs(bb_result_up - bb_result_down)\
+                and (0.022 * sma_20) < abs(bb_result_up - bb_result_down) \
                 and close < bb_result_up:
             return "Sell"
         return None
 
     def cci_100_bb_cross(self, open_price, close, sma_20, close_prev, cci):
-        if abs(open_price - close) > 125 and close > open_price and abs(sma_20 - close) > 125/3 and close_prev < sma_20\
+        if abs(open_price - close) > 125 and close > open_price and abs(
+                sma_20 - close) > 125 / 3 and close_prev < sma_20 \
                 and cci > 100:
             return "Buy"
-        if abs(open_price - close) > 125 and close < open_price and abs(sma_20 - close) > 125/3 and close_prev > sma_20\
+        if abs(open_price - close) > 125 and close < open_price and abs(
+                sma_20 - close) > 125 / 3 and close_prev > sma_20 \
                 and cci < -40:
             return "Sell"
         return None
 
     def rsi_chart(self, rsi, rsi_prev):
-        if 70 < rsi < rsi_prev and abs(rsi-rsi_prev) > 4:
+        if 70 < rsi < rsi_prev and abs(rsi - rsi_prev) > 4:
             return "Sell"
-        if 30 > rsi > rsi_prev and abs(rsi-rsi_prev) > 4:
+        if 30 > rsi > rsi_prev and abs(rsi - rsi_prev) > 4:
             return "Buy"
         return None
 
     def rsi_bb_boundary(self, rsi, rsi_prev, bb_top, bb_bottom, open_price, close):
-        if 30 > rsi and abs(rsi-rsi_prev) > 2 and open_price > bb_bottom > close:
+        if 30 > rsi and abs(rsi - rsi_prev) > 2 and open_price > bb_bottom > close:
             return "Buy"
-        if 70 < rsi and abs(rsi-rsi_prev) > 2 and open_price < bb_top < close:
+        if 70 < rsi and abs(rsi - rsi_prev) > 2 and open_price < bb_top < close:
             return "Sell"
         return None
-
-
-

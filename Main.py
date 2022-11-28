@@ -10,6 +10,8 @@ from plotly.subplots import make_subplots
 import dash
 from dash import html
 from dash import dcc
+from itertools import combinations
+from itertools import permutations
 from dash.dependencies import Input, Output
 
 
@@ -42,9 +44,9 @@ def draw_fig(ffig, fx, fy, fname, frow=1, fcol=1):
 app = dash.Dash(__name__)
 # Binance
 client = Client(_api_key, _secret_key)
-symbol = "BTCUSDT"
+symbol = "RVNUSDT"
 interval = '1h'
-klines = client.get_historical_klines(symbol, interval, "1 Sep,2022")
+klines = client.get_historical_klines(symbol, interval, "1 Sep,2019")
 for line in klines:
     del line[5:]
 data = pd.DataFrame(klines)
@@ -54,10 +56,17 @@ data = data.astype({"open": float, "high": float, "low": float, "close": float})
 indicators = Indicators(data, [20, 50, 100])
 indicators_analysis = IndicatorsAnalysis(data, [20, 50, 100])
 learning_model = LearningModel(indicators_analysis)
-
+strategies_comb = list()
 strategies = ["crossovers", "50_to_100", "sma_cross_rsi", "bb_squezze", "cci_100_bb_cross", "rsi_chart", "rsi_bb_boundary"]
-for strategy in strategies:
-    learning_model.testing(strategy)
+for i in range (1, 8):
+    strategies_comb.append(combinations(strategies, i))
+
+for i in strategies_comb:
+    for j in list(i):
+        df = pd.DataFrame(learning_model.testing(j))
+df.to_csv("results.csv")
+# for strategy in strategies:
+#     learning_model.testing(strategy)
 ...
 
 fig = make_subplots(
