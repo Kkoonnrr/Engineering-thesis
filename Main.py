@@ -44,9 +44,9 @@ def draw_fig(ffig, fx, fy, fname, frow=1, fcol=1):
 app = dash.Dash(__name__)
 # Binance
 client = Client(_api_key, _secret_key)
-symbol = "RVNUSDT"
+symbol = "BTCUSDT"
 interval = '1h'
-klines = client.get_historical_klines(symbol, interval, "1 Sep,2019")
+klines = client.get_historical_klines(symbol, interval, "1 Oct, 2022")
 for line in klines:
     del line[5:]
 data = pd.DataFrame(klines)
@@ -117,58 +117,58 @@ f = pd.Series(e)
 
 
 # SMA CROSS
-fig.add_scatter( x=indicators_analysis.signal_up['open_time'], y = indicators_analysis.signal_up[20], mode ='markers',
-                 name= 'signal_up', marker=dict(color="green", size = 12, ), row=1, col=1)
-fig.add_scatter( x=indicators_analysis.signal_down['open_time'], y = indicators_analysis.signal_down[50], mode ='markers',
-                 name= 'signal_down', marker=dict(color="red", size = 12, ), row=1, col=1)
-# SMA 50 TO 100
-fig.add_scatter( x=indicators_analysis.signal_50_to_100_down['open_time'], y = indicators_analysis.signal_50_to_100_down[100], mode ='markers',
-                 name= 'signal_50_to_100_down', marker=dict(color="red", size = 12, ), row=1, col=1)
-fig.add_scatter( x=indicators_analysis.signal_50_to_100_up['open_time'], y = indicators_analysis.signal_50_to_100_up[100], mode ='markers',
-                 name= 'signal_50_to_100_up', marker=dict(color="green", size = 12, ), row=1, col=1)
-# # RSI AND SMA
+# fig.add_scatter( x=indicators_analysis.signal_up['open_time'], y = indicators_analysis.signal_up[20], mode ='markers',
+#                  name= 'SMA przecięcia up', marker=dict(color="green", size = 12, ), row=1, col=1)
+# fig.add_scatter( x=indicators_analysis.signal_down['open_time'], y = indicators_analysis.signal_down[50], mode ='markers',
+#                  name= 'SMA przecięcia down', marker=dict(color="red", size = 12, ), row=1, col=1)
+# # SMA 50 TO 100
+# fig.add_scatter( x=indicators_analysis.signal_50_to_100_down['open_time'], y = indicators_analysis.signal_50_to_100_down[100], mode ='markers',
+#                  name= 'SMA 50 do SMA 100 down', marker=dict(color="red", size = 12, ), row=1, col=1)
+# fig.add_scatter( x=indicators_analysis.signal_50_to_100_up['open_time'], y = indicators_analysis.signal_50_to_100_up[100], mode ='markers',
+#                  name= 'SMA 50 do SMA 100 up', marker=dict(color="green", size = 12, ), row=1, col=1)
+# RSI AND SMA
 # fig.add_scatter( x=indicators_analysis.sma_cross_rsi_up['open_time'], y = indicators_analysis.sma_cross_rsi_up[20], mode ='markers',
-#                  name= 'sma_cross_rsi', marker=dict(color="green", size = 12, ), row=1, col=1)
+#                  name= 'SMA przecięcia + RSI up', marker=dict(color="green", size = 12, ), row=1, col=1)
 # fig.add_scatter( x=indicators_analysis.sma_cross_rsi_down['open_time'], y = indicators_analysis.sma_cross_rsi_down[20], mode ='markers',
-#                  name= 'sma_cross_rsi', marker=dict(color="red", size = 12, ), row=1, col=1)
+#                  name= 'SMA przecięcia + RSI down', marker=dict(color="red", size = 12, ), row=1, col=1)
 # BB SQUEEZE
-fig.add_scatter( x=indicators_analysis.signal_bb_squeeze_up['open_time'], y = indicators_analysis.signal_bb_squeeze_up[20], mode ='markers',
-                 name= 'signal_bb_squeeze_up', marker=dict(color="green", size = 12, ), row=1, col=1)
-fig.add_scatter( x=indicators_analysis.signal_bb_squeeze_down['open_time'], y = indicators_analysis.signal_bb_squeeze_down[20], mode ='markers',
-                 name= 'signal_bb_squeeze_down', marker=dict(color="red", size = 12, ), row=1, col=1)
-# CCI 100 & BB CROSS
-fig.add_scatter( x=indicators_analysis.cci_100_bb_cross_up['open_time'], y = indicators_analysis.cci_100_bb_cross_up[20], mode ='markers',
-                 name= 'cci_100_bb_cross', marker=dict(color="green", size = 12, ), row=1, col=1)
-fig.add_scatter( x=indicators_analysis.cci_100_bb_cross_down['open_time'], y = indicators_analysis.cci_100_bb_cross_down[20], mode ='markers',
-                 name= 'cci_100_bb_cross', marker=dict(color="red", size = 12, ), row=1, col=1)
+# fig.add_scatter( x=indicators_analysis.signal_bb_squeeze_up['open_time'], y = indicators_analysis.signal_bb_squeeze_up[20], mode ='markers',
+#                  name= 'BB ściśnięcia up', marker=dict(color="green", size = 12, ), row=1, col=1)
+# fig.add_scatter( x=indicators_analysis.signal_bb_squeeze_down['open_time'], y = indicators_analysis.signal_bb_squeeze_down[20], mode ='markers',
+#                  name= 'BB ściśnięcia down', marker=dict(color="red", size = 12, ), row=1, col=1)
+# # CCI 100 & BB CROSS
+# fig.add_scatter( x=indicators_analysis.cci_100_bb_cross_up['open_time'], y = indicators_analysis.cci_100_bb_cross_up[20], mode ='markers',
+#                  name= 'SMA 20 przecięcie + CCI up', marker=dict(color="green", size = 12, ), row=1, col=1)
+# fig.add_scatter( x=indicators_analysis.cci_100_bb_cross_down['open_time'], y = indicators_analysis.cci_100_bb_cross_down[20], mode ='markers',
+#                  name= 'SMA 20 przecięcie + CCI down', marker=dict(color="red", size = 12, ), row=1, col=1)
 # RSI
-fig.add_scatter( x=indicators_analysis.rsi_chart_up['open_time'], y = indicators_analysis.rsi_chart_up[20], mode ='markers',
-                 name= 'rsi_chart', marker=dict(color="green", size = 12, ), row=1, col=1)
-fig.add_scatter( x=indicators_analysis.rsi_chart_down['open_time'], y = indicators_analysis.rsi_chart_down[20], mode ='markers',
-                 name= 'rsi_chart', marker=dict(color="red", size = 12, ), row=1, col=1)
-# RSI AND BB
+# fig.add_scatter( x=indicators_analysis.rsi_chart_up['open_time'], y = indicators_analysis.rsi_chart_up[20], mode ='markers',
+#                  name= 'RSI up', marker=dict(color="green", size = 12, ), row=1, col=1)
+# fig.add_scatter( x=indicators_analysis.rsi_chart_down['open_time'], y = indicators_analysis.rsi_chart_down[20], mode ='markers',
+#                  name= 'RSI down', marker=dict(color="red", size = 12, ), row=1, col=1)
+# # RSI AND BB
 fig.add_scatter( x=indicators_analysis.rsi_bb_boundary_up['open_time'], y = indicators_analysis.rsi_bb_boundary_up[20], mode ='markers',
-                 name= 'rsi_bb_boundary', marker=dict(color="green", size = 12, ), row=1, col=1)
+                 name= 'BB granice + RSI up', marker=dict(color="green", size = 12, ), row=1, col=1)
 fig.add_scatter( x=indicators_analysis.rsi_bb_boundary_down['open_time'], y = indicators_analysis.rsi_bb_boundary_down[20], mode ='markers',
-                 name= 'rsi_bb_boundary', marker=dict(color="red", size = 12, ), row=1, col=1)
-
-
-
-
-
-
-draw_fig(fig, data['open_time'], indicators.ichimoku_cloud_result['Tenkan-sen'], 'Tenkan-sen')
-draw_fig(fig, data['open_time'], indicators.ichimoku_cloud_result['Kijun-sen'], 'Kijun-sen')
-draw_fig(fig, f, indicators.ichimoku_cloud_result['Senkou Span A'], 'Senkou Span A')
-draw_fig(fig, f, indicators.ichimoku_cloud_result['Senkou Span B'], 'Senkou Span B')
-draw_fig(fig, data['open_time'], indicators.ichimoku_cloud_result['chikou_span'], 'chikou_span')
-draw_fig(fig, data['open_time'], indicators.cci_result, 'CCI', frow=3)
+                 name= 'BB granice + RSI down', marker=dict(color="red", size = 12, ), row=1, col=1)
+#
+#
+#
+#
+#
+#
+# draw_fig(fig, data['open_time'], indicators.ichimoku_cloud_result['Tenkan-sen'], 'Tenkan-sen')
+# draw_fig(fig, data['open_time'], indicators.ichimoku_cloud_result['Kijun-sen'], 'Kijun-sen')
+# draw_fig(fig, f, indicators.ichimoku_cloud_result['Senkou Span A'], 'Senkou Span A')
+# draw_fig(fig, f, indicators.ichimoku_cloud_result['Senkou Span B'], 'Senkou Span B')
+# draw_fig(fig, data['open_time'], indicators.ichimoku_cloud_result['chikou_span'], 'chikou_span')
+# draw_fig(fig, data['open_time'], indicators.cci_result, 'CCI', frow=3)
 draw_fig(fig, data['open_time'], indicators.rsi_result, 'RSI', frow=2)
 draw_fig(fig, data['open_time'], indicators.bb_result[0], 'bollinger_band up')
 draw_fig(fig, data['open_time'], indicators.bb_result[1], 'bollinger_band down')
 draw_fig(fig, data['open_time'], indicators.sma_result[20], 'SMA 20')
-draw_fig(fig, data['open_time'], indicators.sma_result[50], 'SMA 50')
-draw_fig(fig, data['open_time'], indicators.sma_result[100], 'SMA 100')
+# draw_fig(fig, data['open_time'], indicators.sma_result[50], 'SMA 50')
+# draw_fig(fig, data['open_time'], indicators.sma_result[100], 'SMA 100')
 fig.add_candlestick(x=data['open_time'],
                     open=data['open'],
                     high=data['high'],
@@ -178,6 +178,11 @@ fig.add_candlestick(x=data['open_time'],
                     row=1, col=1
                     )
 fig.update_layout(xaxis_rangeslider_visible=False, template="plotly_dark", )
+fig.update_xaxes(
+        title_text = "CZAS")
+
+fig.update_yaxes(
+        title_text = "KWOTA")
 # fig.show()
 
 app.layout = html.Div([

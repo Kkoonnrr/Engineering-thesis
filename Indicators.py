@@ -172,8 +172,8 @@ class IndicatorsAnalysis(Indicators):
         return None
 
     def sma_cross_rsi(self, sma_20, sma_20_prev, sma_50, sma_50_prev, sma_100, sma_100_prev, rsi, rsi_prev):
-        if sma_20 > sma_50 > sma_20_prev and sma_20_prev < sma_50_prev \
-                or sma_20 > sma_100 > sma_20_prev and sma_20_prev < sma_100_prev \
+        if sma_20 > sma_50 > sma_20_prev and sma_20_prev < sma_50_prev and rsi > 60 \
+                or sma_20 > sma_100 > sma_20_prev and sma_20_prev < sma_100_prev and rsi > 60 \
                 or sma_50 > sma_100 > sma_50_prev and sma_50_prev < sma_100_prev and rsi > 60:
             status = "Buy"
             return status
