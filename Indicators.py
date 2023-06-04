@@ -10,7 +10,6 @@ class Indicators:
         self.bb_result = self.bollinger_bands()
         self.rsi_result = self.relative_strength_index()
         self.cci_result = self.commodity_channel_index()
-        #self.ichimoku_cloud_result = self.ichimoku_cloud()
 
     def simple_moving_average(self, sma_periods: list):
         a = list()
